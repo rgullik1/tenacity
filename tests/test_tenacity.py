@@ -1053,6 +1053,11 @@ def _retryable_test_with_exception_cause_type(thing: typing.Any) -> typing.Any:
     return thing.go()
 
 
+@retry(retry=tenacity.retry_unless_exception_cause_type(NameError))
+def _retryable_test_unless_exception_cause_type(thing: typing.Any) -> typing.Any:
+    return thing.go()
+
+
 @retry(retry=tenacity.retry_if_exception_type(IOError))
 def _retryable_test_with_exception_type_io(thing: typing.Any) -> typing.Any:
     return thing.go()
@@ -1320,6 +1325,17 @@ class TestDecoratorWrapper(unittest.TestCase):
             _retryable_test_with_exception_cause_type(NoIOErrorCauseAfterCount(5))
             self.fail("Expected exception without NameError as cause")
         except NameError:
+            pass
+
+    def test_retry_unless_exception_cause_type(self) -> None:
+        self.assertTrue(
+            _retryable_test_unless_exception_cause_type(NoIOErrorCauseAfterCount(5))
+        )
+
+        try:
+            _retryable_test_unless_exception_cause_type(NoNameErrorCauseAfterCount(5))
+            self.fail("Expected exception with NameError as cause")
+        except OSError:
             pass
 
     def test_retry_preserves_argument_defaults(self) -> None:

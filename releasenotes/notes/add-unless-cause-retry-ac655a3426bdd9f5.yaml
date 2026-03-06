@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add a new `retry_base` class called `retry_unless_exception_cause_type` that
+    checks, recursively, if any of the causes of the raised exception are not of a certain type.
